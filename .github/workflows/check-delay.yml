@@ -1,8 +1,10 @@
-# 电车延误检查 - 每天18:20 JST (09:20 UTC)
+# 电车延误检查 - 每天08:00和18:20 JST
 name: Train Delay Check
 
 on:
   schedule:
+    # 08:00 JST = 23:00 UTC (前一天)
+    - cron: '0 23 * * *'
     # 18:20 JST = 09:20 UTC
     - cron: '20 9 * * *'
   
