@@ -211,21 +211,24 @@ async function sendEmail(delays: DelayInfo[]): Promise<void> {
   
   const delayedLines = delays.filter(d => d.status === 'delayed');
 
+  if (delayedLines.length === 0) {
+    console.log('No delays detected, skipping email');
+    return;
+  }
+
   const now = new Date();
   const jstTime = now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
 
-  const subject = delayedLines.length > 0
-    ? `🚃 電車遅延通知: ${delayedLines.map(d => d.line).join(', ')}`
-    : `🚃 電車運行状況（テスト通知）`;
+  const subject = `🚃 電車遅延通知: ${delayedLines.map(d => d.line).join(', ')}`;
   
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #e74c3c;">⚠️ 電車遅延情報</h2>
       <p style="color: #666;">確認時刻: ${jstTime} (JST)</p>
       
-      ${delays.map(d => `
-        <div style="border-left: 4px solid ${d.status === 'delayed' ? '#e74c3c' : '#27ae60'}; padding-left: 16px; margin: 16px 0;">
-          <h3 style="margin: 0;">${d.status === 'delayed' ? '⚠️' : '✅'} ${d.operator} ${d.line}</h3>
+      ${delayedLines.map(d => `
+        <div style="border-left: 4px solid #e74c3c; padding-left: 16px; margin: 16px 0;">
+          <h3 style="margin: 0;">${d.operator} ${d.line}</h3>
           <p style="color: #333;">${d.message}</p>
         </div>
       `).join('')}
@@ -287,9 +290,15 @@ async function main() {
     console.log(`${statusIcon} ${result.operator} ${result.line}: ${result.message}`);
   }
   
-  // 发送邮件（测试模式：无论是否有延误都发送）
-  console.log('\n📧 Sending notification email...');
-  await sendEmail(results);
+  // 如果有延误，发送邮件
+  const hasDelays = results.some(r => r.status === 'delayed');
+
+  if (hasDelays) {
+    console.log('\n📧 Sending notification email...');
+    await sendEmail(results);
+  } else {
+    console.log('\n✅ All lines running normally. No email sent.');
+  }
 }
 
 main().catch(console.error);
