@@ -1,0 +1,59 @@
+# ============================================
+# 電車遅延チェッカー - GitHub Actions ワークフロー
+# 毎日18:20 JST（09:20 UTC）に実行
+# ============================================
+
+name: 🚃 Train Delay Checker
+
+on:
+  # 定時実行（UTC時間で指定）
+  # JST 18:20 = UTC 09:20
+  schedule:
+    - cron: '20 9 * * *'  # 毎日 18:20 JST
+  
+  # 手動実行も可能
+  workflow_dispatch:
+    inputs:
+      force_email:
+        description: '遅延がなくてもメールを送信する'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  check-delays:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      - name: 🔨 Build TypeScript
+        run: npm run build
+      
+      - name: 🚃 Check train delays
+        env:
+          # GitHub Secrets から環境変数を設定
+          NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          FORCE_EMAIL: ${{ github.event.inputs.force_email }}
+        run: npm start
+      
+      - name: 📊 Summary
+        run: |
+          echo "## 🚃 電車遅延チェック完了" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **実行時刻**: $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M:%S JST')" >> $GITHUB_STEP_SUMMARY
+          echo "- **監視路線**: 日比谷線、京葉線" >> $GITHUB_STEP_SUMMARY
