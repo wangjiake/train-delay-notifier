@@ -4,15 +4,15 @@
   "description": "日比谷線・京葉線の遅延情報をチェックしてメール通知",
   "type": "module",
   "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
     "check": "npx tsx check-delay.ts",
     "test": "npx tsx check-delay.ts"
   },
-  "dependencies": {
-    "cheerio": "^1.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "tsx": "^4.0.0",
-    "typescript": "^5.0.0"
+    "@cloudflare/workers-types": "^4.20240117.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^3.0.0"
   }
 }

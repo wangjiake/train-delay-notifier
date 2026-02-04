@@ -1,0 +1,16 @@
+name = "train-delay-notifier"
+main = "src/worker.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 定时触发器 (UTC 时间)
+# 08:00 JST = 23:00 UTC (前一天)
+# 18:20 JST = 09:20 UTC
+[triggers]
+crons = ["0 23 * * *", "20 9 * * *"]
+
+# 环境变量（敏感信息用 wrangler secret 设置）
+# wrangler secret put RESEND_API_KEY
+# wrangler secret put TO_EMAIL
+[vars]
+FROM_EMAIL = "onboarding@resend.dev"
