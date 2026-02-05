@@ -20,7 +20,7 @@ interface DelayInfo {
 
 const YAHOO_URLS = {
   hibiya: 'https://transit.yahoo.co.jp/diainfo/134/0',
-  keiyo: 'https://transit.yahoo.co.jp/diainfo/36/0'
+  keiyo: 'https://transit.yahoo.co.jp/diainfo/69/0'
 };
 
 // 使用 Yahoo! 路線情報检查延误
